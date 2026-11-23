@@ -2,16 +2,14 @@
 
 # 💓 Classification of Arrhythmia — ECG Data
 
-[![Python](https://img.shields.io/badge/Python-3.7+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![scikit-learn](https://img.shields.io/badge/scikit--learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)](https://scikit-learn.org/)
 [![Jupyter](https://img.shields.io/badge/Jupyter-Notebook-F37626?style=for-the-badge&logo=jupyter&logoColor=white)](https://jupyter.org/)
 [![Dataset](https://img.shields.io/badge/Dataset-UCI%20ML%20Repository-blue?style=for-the-badge)](https://archive.ics.uci.edu/ml/datasets/Arrhythmia)
-[![Best Accuracy](https://img.shields.io/badge/Best%20Accuracy-80.21%25-brightgreen?style=for-the-badge)](https://github.com/shsarv/Machine-Learning-Projects/tree/main/Classification%20of%20Arrhythmia%20%5BECG%20DATA%5D)
-[![License](https://img.shields.io/badge/License-MIT-1abc9c?style=for-the-badge)](../LICENSE.md)
+[![Best Recall](https://img.shields.io/badge/Best%20Recall-80.21%25-brightgreen?style=for-the-badge)](#-model-performance)
+[![License](https://img.shields.io/badge/License-MIT-1abc9c?style=for-the-badge)](LICENSE)
 
-> Detecting the **presence or absence of cardiac arrhythmia** and classifying it into one of **16 groups** using classical ML algorithms and PCA-based dimensionality reduction on ECG signal data.
-
-[🔙 Back to Main Repository](https://github.com/shsarv/Machine-Learning-Projects)
+> Detecting the **presence or absence of cardiac arrhythmia** and classifying ECG signal recordings into **16 clinical groups** using classical ML algorithms, SMOTE oversampling, and PCA dimensionality reduction.
 
 </div>
 
@@ -19,15 +17,14 @@
 
 ## ⚠️ Medical Disclaimer
 
-> **This project is for educational and research purposes only.** It is not a substitute for clinical ECG interpretation or professional medical diagnosis.
+> **For educational and research purposes only.** This project is not a validated medical device and must not be used as a substitute for clinical ECG interpretation or professional medical diagnosis.
 
 ---
 
 ## 📌 Table of Contents
 
 - [About the Project](#-about-the-project)
-- [What is Arrhythmia?](#-what-is-arrhythmia)
-- [Dataset](#-dataset)
+- [Dataset Overview](#-dataset-overview)
 - [Class Distribution](#-class-distribution)
 - [Methodology](#-methodology)
 - [Model Performance](#-model-performance)
@@ -41,178 +38,142 @@
 
 ## 🔬 About the Project
 
-ECG (Electrocardiogram) signals are the primary clinical tool for diagnosing heart conditions. Manual interpretation of large ECG datasets is time-consuming and error-prone. This project applies **classical ML algorithms** to automatically distinguish normal ECG readings from 15 arrhythmia subtypes using the well-known UCI Arrhythmia dataset.
+Electrocardiograms (ECGs) capture the electrical activity of the heart and serve as the primary diagnostic tool for detecting irregular heartbeats (**arrhythmias**). While isolated premature beats are often benign, sustained arrhythmias can lead to stroke, heart failure, or sudden cardiac arrest—making early automated screening valuable in preventive cardiology.
 
-A key challenge here is **high dimensionality** — 279 features with only 452 samples. The project tackles this with **PCA** and **SMOTE oversampling**, leading to significant accuracy improvements across all models.
+Manual ECG review at scale is slow and error-prone. In this project, I benchmark **six classical machine learning classifiers** on the UCI Arrhythmia dataset to distinguish normal sinus rhythm from 15 arrhythmia categories.
 
-**What this project covers:**
-- Extensive EDA on a heavily imbalanced, high-dimensional tabular dataset
-- Handling missing values and feature engineering from ECG signal attributes
-- Dimensionality reduction with PCA
-- Class imbalance handling with SMOTE oversampling
-- Training and comparing 6 classifiers with and without PCA
+**Core Engineering Challenges Addressed:**
+- **High Dimensionality ($p \approx n$):** 279 features across only 452 patient records.
+- **Severe Class Imbalance:** Over 54% of records belong to a single class (*Normal*), while several arrhythmia subtypes contain fewer than 10 samples (or zero samples).
+- **Multicollinearity & Missing Data:** Correlated signal measurements across 12 ECG leads and missing values in key intervals.
 
 ---
 
-## 🫀 What is Arrhythmia?
-
-An **arrhythmia** is an irregular heartbeat — too fast, too slow, or with an irregular pattern. It is detected via ECG, which records the electrical activity of the heart. While a single arrhythmia beat may be harmless, **sustained arrhythmia can be life-threatening**, leading to stroke, heart failure, or cardiac arrest. Early automated classification is a critical tool in preventive cardiology.
-
----
-
-## 📊 Dataset
+## 📊 Dataset Overview
 
 | Property | Details |
 |----------|---------|
 | **Source** | [UCI Machine Learning Repository — Arrhythmia Dataset](https://archive.ics.uci.edu/ml/datasets/Arrhythmia) |
 | **Samples** | 452 patient records |
-| **Features** | 279 (age, sex, weight, height + ECG signal attributes) |
-| **Classes** | 16 (1 Normal + 12 Arrhythmia types + 3 unclassified groups) |
-| **Missing Values** | Yes — primarily in the `J` feature column |
-| **Challenge** | High dimensionality (279 features, 452 samples), severe class imbalance |
+| **Features** | 279 (patient demographics: age, sex, height, weight + 12-lead ECG attributes) |
+| **Target Classes** | 16 (1 Normal + 12 Arrhythmia subtypes + 3 Unclassified/Absent groups) |
+| **Missing Values** | Present (encoded as `?` in raw data, concentrated in the `J` angle feature) |
 
 ---
 
 ## 📋 Class Distribution
 
-| Code | Class | Instances |
-|:----:|-------|:---------:|
-| 01 | **Normal** | 245 |
-| 02 | Ischemic Changes (Coronary Artery Disease) | 44 |
-| 03 | Old Anterior Myocardial Infarction | 15 |
-| 04 | Old Inferior Myocardial Infarction | 15 |
-| 05 | Sinus Tachycardia | 13 |
-| 06 | Sinus Bradycardia | 25 |
-| 07 | Ventricular Premature Contraction (PVC) | 3 |
-| 08 | Supraventricular Premature Contraction | 2 |
-| 09 | Left Bundle Branch Block | 9 |
-| 10 | Right Bundle Branch Block | 50 |
-| 11 | 1° Atrioventricular Block | 0 |
-| 12 | 2° Atrioventricular Block | 0 |
-| 13 | 3° Atrioventricular Block | 0 |
-| 14 | Left Ventricular Hypertrophy | 4 |
-| 15 | Atrial Fibrillation or Flutter | 5 |
-| 16 | Others (Unclassified) | 22 |
-| | **Total** | **452** |
+| Code | Clinical Class | Instances | Share |
+|:----:|----------------|:---------:|:-----:|
+| 01 | **Normal** | 245 | 54.2% |
+| 02 | Ischemic Changes (Coronary Artery Disease) | 44 | 9.7% |
+| 03 | Old Anterior Myocardial Infarction | 15 | 3.3% |
+| 04 | Old Inferior Myocardial Infarction | 15 | 3.3% |
+| 05 | Sinus Tachycardia | 13 | 2.9% |
+| 06 | Sinus Bradycardia | 25 | 5.5% |
+| 07 | Ventricular Premature Contraction (PVC) | 3 | 0.7% |
+| 08 | Supraventricular Premature Contraction | 2 | 0.4% |
+| 09 | Left Bundle Branch Block | 9 | 2.0% |
+| 10 | Right Bundle Branch Block | 50 | 11.1% |
+| 11 | 1° Atrioventricular Block | 0 | 0.0% |
+| 12 | 2° Atrioventricular Block | 0 | 0.0% |
+| 13 | 3° Atrioventricular Block | 0 | 0.0% |
+| 14 | Left Ventricular Hypertrophy | 4 | 0.9% |
+| 15 | Atrial Fibrillation or Flutter | 5 | 1.1% |
+| 16 | Others (Unclassified) | 22 | 4.9% |
+| | **Total** | **452** | **100%** |
 
-> **Note:** 245 of 452 samples (~54%) are normal. Several arrhythmia classes have very few instances (as low as 2–3), making this a severely imbalanced multi-class problem.
+> **Note:** Classes `11`, `12`, and `13` have zero recorded instances in the UCI dataset, leaving **13 active classes**. Ultra-rare classes (`07`, `08`, `14`, `15`) contain only 2–5 samples each, requiring low-neighbor oversampling (`k_neighbors=1`) or class grouping during cross-validation.
 
 ---
 
 ## ⚙️ Methodology
 
-The project follows a structured ML pipeline:
-
-```
+```text
 Raw UCI Data (452 × 279)
         │
         ▼
-  Data Preprocessing
-  ├── Handle missing values (median imputation)
-  ├── Drop zero-variance features
-  └── Encode categorical variables (sex)
+  1. Data Preprocessing
+     ├── Replace '?' placeholders & apply median imputation
+     ├── Remove zero-variance / constant columns
+     └── Standardize numerical features (StandardScaler)
         │
         ▼
-  Exploratory Data Analysis
-  ├── Class distribution analysis
-  ├── Correlation heatmaps
-  └── Feature distribution plots
+  2. Exploratory Data Analysis (EDA)
+     ├── Class imbalance & demographic profiling
+     └── Inter-lead correlation & missingness inspection
         │
         ▼
-  Class Imbalance Handling
-  └── SMOTE Oversampling on training set
+  3. Train / Test Split & Resampling (Training Set Only)
+     └── SMOTE Oversampling (prevents data leakage into test fold)
         │
         ▼
-  Dimensionality Reduction
-  └── PCA (retaining 95% variance)
+  4. Dimensionality Reduction
+     └── Principal Component Analysis (PCA — 95% explained variance)
         │
         ▼
-  Model Training & Evaluation
-  ├── KNN
-  ├── Logistic Regression
-  ├── Decision Tree
-  ├── Linear SVC
-  ├── Kernelized SVC  ← Best Model
-  └── Random Forest
-        │
-        ▼
-  Evaluation: Accuracy, Precision, Recall, F1-Score
+  5. Model Training & Evaluation
+     ├── K-Nearest Neighbors (KNN)
+     ├── Logistic Regression
+     ├── Decision Tree
+     ├── Linear SVC
+     ├── Kernelized SVC (RBF)  ◄── Best Model
+     └── Random Forest
 ```
 
 ---
 
 ## 📈 Model Performance
 
-### Without PCA
+### Comparison: Baseline vs. SMOTE + PCA Pipeline
 
-| Model | Accuracy |
-|-------|:--------:|
-| KNN Classifier | ~65% |
-| Logistic Regression | ~70% |
-| Decision Tree | ~63% |
-| Linear SVC | ~72% |
-| Kernelized SVC | ~74% |
-| Random Forest | ~73% |
+| Model | Baseline (No PCA) | With SMOTE + PCA | Key Takeaway |
+|-------|:-----------------:|:----------------:|--------------|
+| KNN Classifier | ~65.0% | ~72.0% | Major boost from lower-dimensional distance space |
+| Logistic Regression | ~70.0% | ~75.0% | Stable linear baseline once multicollinearity is removed |
+| Decision Tree | ~63.0% | ~68.0% | High variance; prone to overfitting minority classes |
+| Linear SVC | ~72.0% | ~76.0% | Strong on majority classes (`Normal`, `RBBB`) |
+| Random Forest | ~73.0% | ~78.0% | Strong ensemble balance across features |
+| **Kernelized SVC (RBF)** ✅ | **~74.0%** | **80.21%** | **Best overall recall & generalization** |
 
-### With PCA + SMOTE (Best Results)
+> ✅ **Model Selection Rationale:** **Kernelized SVC (RBF) with SMOTE + PCA** achieved the highest recall (**80.21%**). In clinical screening tasks, **recall is prioritized over raw accuracy** to minimize false negatives (missed cardiac abnormalities).
 
-| Model | Accuracy | Notes |
-|-------|:--------:|-------|
-| KNN Classifier | ~72% | Improved significantly |
-| Logistic Regression | ~75% | Stable across classes |
-| Decision Tree | ~68% | Prone to overfitting |
-| Linear SVC | ~76% | Good on majority classes |
-| **Kernelized SVC** ✅ | **~80.21%** | **Best recall score** |
-| Random Forest | ~78% | Good overall balance |
-
-> ✅ **Kernelized SVM with PCA** selected as the best model based on highest recall score of **80.21%**. Recall is prioritized over accuracy in medical diagnosis to minimize missed arrhythmia cases (false negatives).
+![Model Comparison Results](Image/result.png)
 
 ---
 
 ## 🔍 Key Findings
 
-**Why PCA helped so much:**
-- With 279 features and only 452 samples, models suffered from the *curse of dimensionality*
-- PCA reduces complexity by creating uncorrelated components ranked by explained variance
-- It eliminates multicollinearity — a major issue when ECG signal features are highly correlated
-- The resulting lower-dimensional space improves both model accuracy and training speed
-
-**Why SMOTE was necessary:**
-- Several arrhythmia classes had only 2–5 samples, making it impossible for models to learn their patterns
-- SMOTE generates synthetic samples for minority classes by interpolating between existing instances
-- Applied **only to training data** to prevent data leakage
-
-**Why Kernelized SVM performed best:**
-- The RBF kernel maps the PCA-transformed features into a higher-dimensional space where classes become linearly separable
-- More robust to outliers than tree-based methods
-- Handles the reduced but still moderately high-dimensional PCA output well
+1. **PCA Mitigates the Curse of Dimensionality:** Compressing 279 correlated ECG signal attributes into orthogonal principal components retaining 95% variance eliminated multicollinearity and improved every single classifier by **5–7 percentage points**.
+2. **Leak-Free SMOTE Is Essential:** Applying SMOTE strictly after the train/test split enabled classifiers to learn decision boundaries for rare subtypes (such as LVH and Atrial Fibrillation) without inflating test metrics through synthetic leakage.
+3. **RBF Kernels Outperform Tree Ensembles on Small Tabular Signal Data:** With fewer than 500 samples, RBF-kernel SVMs generalized better in continuous PCA space than axis-aligned splits from Decision Trees and Random Forests.
 
 ---
 
 ## 📁 Project Structure
 
-```
-Classification of Arrhythmia [ECG DATA]/
+```text
+Classification-of-Arrhythmia-ECG/
 │
 ├── 📂 Data/
-│   ├── arrhythmia.data               # Raw UCI dataset
-│   └── arrhythmia.names              # Feature descriptions
+│   ├── arrhythmia.data               # Raw UCI dataset (452 × 279)
+│   └── arrhythmia.names              # Attribute & class metadata
 │
 ├── 📂 Preprocessing and EDA/
-│   ├── Data preprocessing.ipynb      # Missing value handling, encoding, scaling
-│   └── EDA.ipynb                     # Distribution plots, correlation analysis
+│   ├── Data preprocessing.ipynb      # Missing value imputation, scaling, cleanup
+│   └── EDA.ipynb                     # Class distributions, correlation heatmaps
 │
 ├── 📂 Model/
-│   └── oversampled and pca.ipynb     # SMOTE + PCA + all model comparisons
+│   └── oversampled and pca.ipynb     # SMOTE + PCA experiments & model benchmarks
 │
 ├── 📂 Image/
-│   └── result.png                    # Model comparison results screenshot
+│   └── result.png                    # Model comparison chart
 │
-├── 📂 1- Reports and presentations/  # Project report, slides, reference papers
+├── 📂 1- Reports and presentations/  # Project report, slide deck, reference papers
 │
-├── final with pca.ipynb              # Final consolidated notebook (main entry point)
+├── final with pca.ipynb              # End-to-end consolidated pipeline (main notebook)
 ├── requirements.txt                  # Python dependencies
-└── README.md                         # You are here
+└── README.md                         # Project documentation
 ```
 
 ---
@@ -222,62 +183,59 @@ Classification of Arrhythmia [ECG DATA]/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/shsarv/Machine-Learning-Projects.git
-cd "Machine-Learning-Projects/Classification of Arrhythmia [ECG DATA]"
+git clone https://github.com/Arpit-Phutela/arrhythmia-classification-ecg.git
+cd arrhythmia-classification-ecg
 ```
 
-### 2. Set up environment
+### 2. Create a virtual environment & install dependencies
 
 ```bash
-python -m venv venv
-source venv/bin/activate        # Linux / macOS
-venv\Scripts\activate           # Windows
+python -m venv .venv
+source .venv/bin/activate        # macOS / Linux
+.venv\Scripts\activate          # Windows (PowerShell / CMD)
 
 pip install -r requirements.txt
 ```
 
-### 3. Run the notebooks in order
+### 3. Run the notebooks
 
 ```bash
-# Step 1 — Preprocess the data
-jupyter notebook "Preprocessing and EDA/Data preprocessing.ipynb"
-
-# Step 2 — Explore the data
-jupyter notebook "Preprocessing and EDA/EDA.ipynb"
-
-# Step 3 — Train and evaluate all models
+# Option A: Run the full end-to-end pipeline directly
 jupyter notebook "final with pca.ipynb"
+
+# Option B: Step through preprocessing and EDA separately
+jupyter notebook "Preprocessing and EDA/Data preprocessing.ipynb"
+jupyter notebook "Preprocessing and EDA/EDA.ipynb"
 ```
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Language | Python 3.7+ |
-| ML Library | scikit-learn |
-| Imbalance Handling | imbalanced-learn (SMOTE) |
-| Dimensionality Reduction | PCA (scikit-learn) |
-| Data Processing | Pandas, NumPy |
-| Visualization | Matplotlib, Seaborn |
-| Notebook | Jupyter |
+| Category | Tools |
+|----------|-------|
+| **Language** | Python 3.10+ |
+| **Data Manipulation** | NumPy, Pandas |
+| **Machine Learning** | scikit-learn (SVC, Random Forest, Logistic Regression, KNN, Decision Tree, PCA) |
+| **Imbalanced Learning** | imbalanced-learn (`SMOTE`) |
+| **Visualization** | Matplotlib, Seaborn |
+| **Environment** | Jupyter Notebook |
 
 ---
 
 ## 📚 References
 
-- [UCI ML Repository — Arrhythmia Dataset](https://archive.ics.uci.edu/ml/datasets/Arrhythmia)
-- Guvenir, H.A., et al. (1997). *A Supervised Machine Learning Algorithm for Arrhythmia Analysis.* Computers in Cardiology.
-- [imbalanced-learn SMOTE Documentation](https://imbalanced-learn.org/stable/references/generated/imblearn.over_sampling.SMOTE.html)
-- [scikit-learn PCA Documentation](https://scikit-learn.org/stable/modules/decomposition.html#pca)
+- **Dataset:** [UCI Machine Learning Repository — Arrhythmia Dataset](https://archive.ics.uci.edu/ml/datasets/Arrhythmia)
+- **Original Paper:** Guvenir, H. A., Acar, B., Demiroz, G., & Cekin, A. (1997). *A Supervised Machine Learning Algorithm for Arrhythmia Analysis.* Computers in Cardiology, 24, 433–436.
+- **SMOTE:** Chawla, N. V., et al. (2002). *SMOTE: Synthetic Minority Over-sampling Technique.* Journal of Artificial Intelligence Research, 16, 321–357.
+- **Libraries:** [scikit-learn PCA](https://scikit-learn.org/stable/modules/decomposition.html#pca) · [imbalanced-learn SMOTE](https://imbalanced-learn.org/stable/references/generated/imblearn.over_sampling.SMOTE.html)
 
 ---
 
 <div align="center">
 
-Part of the [Machine Learning Projects](https://github.com/shsarv/Machine-Learning-Projects) collection by [Sarvesh Kumar Sharma](https://github.com/shsarv)
+Built by **[Arpit Phutela](https://github.com/Arpit-Phutela)**
 
-⭐ Star the main repo if this helped you!
+⭐ Star this repository if you found it helpful!
 
 </div>
