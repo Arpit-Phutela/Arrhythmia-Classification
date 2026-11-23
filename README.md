@@ -4,10 +4,8 @@
 
 [![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![scikit-learn](https://img.shields.io/badge/scikit--learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)](https://scikit-learn.org/)
-[![Jupyter](https://img.shields.io/badge/Jupyter-Notebook-F37626?style=for-the-badge&logo=jupyter&logoColor=white)](https://jupyter.org/)
 [![Dataset](https://img.shields.io/badge/Dataset-UCI%20ML%20Repository-blue?style=for-the-badge)](https://archive.ics.uci.edu/ml/datasets/Arrhythmia)
 [![Best Recall](https://img.shields.io/badge/Best%20Recall-80.21%25-brightgreen?style=for-the-badge)](#-model-performance)
-[![License](https://img.shields.io/badge/License-MIT-1abc9c?style=for-the-badge)](LICENSE)
 
 > Detecting the **presence or absence of cardiac arrhythmia** and classifying ECG signal recordings into **16 clinical groups** using classical ML algorithms, SMOTE oversampling, and PCA dimensionality reduction.
 
